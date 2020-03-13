@@ -1,0 +1,13 @@
+easydict
+ipython
+jupyter
+jupyterlab
+jupyterthemes
+linereader
+matplotlib
+nltk
+numpy
+rouge
+scikit-learn
+spacy
+torch
