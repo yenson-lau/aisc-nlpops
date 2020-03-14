@@ -119,7 +119,7 @@ class CNNDailyMail(Dataset):
   def strip_tags(self, seg, split=True):
     lines = map(lambda l: re.sub('<t>','',l).strip(), seg.split(r'</t>'))
     lines = filter(lambda line: len(line)>0, lines)
-    return list(lines)
+    return list(lines) if split else ''.join(lines)
 
   def __len__(self):
     return self.len
