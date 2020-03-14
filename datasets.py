@@ -1,9 +1,21 @@
 import os, tarfile
 from easydict import EasyDict as edict
-from linereader import dopen
 from random import randint
 from torch.utils.data import Dataset, DataLoader
 from urllib import request
+
+
+def doclen(fpath):
+  with open(fpath, 'r') as f:
+    for i, l in enumerate(f,1): pass
+    if l=='':  i -= 1
+    return i
+
+def getline(fpath, idx):
+  with open(fpath, 'r') as f:
+    for i, l in enumerate(f):
+      if i == idx:  return l
+    return None
 
 
 class GigaWord(Dataset):
@@ -11,38 +23,29 @@ class GigaWord(Dataset):
     super(GigaWord, self).__init__()
 
     self.split = split
-    self.directory = directory
     if split=='train':
-      self.fileNames = ('train.article.txt', 'train.title.txt')
+      self.fpaths = dict(src='train.article.txt', tgt='train.title.txt')
     else:
-      self.fileNames = ('valid.article.filter.txt', 'valid.title.filter.txt')
-
-    self.inFile = dopen(os.path.join(directory, self.fileNames[0]))
-    self.tgtFile = dopen(os.path.join(directory, self.fileNames[1]))
-    self._len_ = None
+      self.fpaths = dict(src='valid.article.filter.txt', tgt='valid.title.filter.txt')
+    self.fpaths = edict({k: os.path.join(directory, v) for k,v in self.fpaths.items()})
+    self.len = None
 
   def __len__(self):
-    if self._len_ is None:
-      with open(os.path.join(self.directory, self.fileNames[0]),'r') as f:
-        for i, l in enumerate(f,1): pass
-        if l=='':  i -= 1
-      self._len_ = i
-
-    return self._len_
+    if self.len is None:  self.len = doclen(self.fpaths.src)
+    return self.len
 
   def __getitem__(self, idx):
-    idx += 1
-    return (self.inFile.getline(idx).strip(),
-            self.tgtFile.getline(idx).strip())
+    return edict({k: getline(v,idx) for k,v in self.fpaths.items()})
 
 
 class CNNDailyMail(Dataset):
   def __init__(self, directory='data/cnndm', split='train'):
+    super(CNNDailyMail, self).__init__()
+
     self.directory = directory
     self.split = split
 
-    self.fnames = edict(src=None, tgt=None)
-    self.files = edict(src=None, tgt=None)
+    self.fpaths = edict(src=None, tgt=None)
     self.len = None
     self.get_data()
 
@@ -76,17 +79,12 @@ class CNNDailyMail(Dataset):
       src = os.path.join(self.directory, f'{self.split}.txt.src'),
       tgt = os.path.join(self.directory, f'{self.split}.txt.tgt.tagged')
     )
-    self.files = edict({k: dopen(fp) for k, fp in self.fpaths.items()})
 
     # Get dataset length
-    with open(self.fpaths.tgt,'r') as f:
-      for self.len, l in enumerate(f,1): pass
-      if l=='':  self.len -= 1
+    self.len = doclen(self.fpaths.src)
 
   def __len__(self):
     return self.len
 
   def __getitem__(self, idx):
-    idx += 1
-    out = edict({k: f.getline(idx).strip() for k, f in self.files.items()})
-    return out
+    return edict({k: getline(v,idx) for k,v in self.fpaths.items()})

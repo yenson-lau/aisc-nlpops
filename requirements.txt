@@ -3,7 +3,7 @@ ipython
 jupyter
 jupyterlab
 jupyterthemes
-linereader
+lexrank
 matplotlib
 nltk
 numpy
