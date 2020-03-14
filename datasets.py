@@ -116,7 +116,7 @@ class CNNDailyMail(Dataset):
     # Get dataset length
     self.len = doclen(self.fpaths.src)
 
-  def split_tags(self, seg):
+  def strip_tags(self, seg, split=True):
     lines = map(lambda l: re.sub('<t>','',l).strip(), seg.split(r'</t>'))
     lines = filter(lambda line: len(line)>0, lines)
     return list(lines)
