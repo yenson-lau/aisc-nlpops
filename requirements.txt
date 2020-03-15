@@ -1,4 +1,6 @@
+beautifulsoup4
 easydict
+feedparser
 ipython
 jupyter
 jupyterlab
@@ -9,5 +11,6 @@ nltk
 numpy
 rouge
 scikit-learn
+summa
 spacy
 torch
