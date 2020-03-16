@@ -7,10 +7,13 @@ jupyterlab
 jupyterthemes
 lexrank
 matplotlib
+mlflow
 nltk
 numpy
+pandas
 rouge
 scikit-learn
-summa
 spacy
+summa
 torch
+torchvision
