@@ -15,5 +15,6 @@ rouge
 scikit-learn
 spacy
 summa
+sumy
 torch
 torchvision

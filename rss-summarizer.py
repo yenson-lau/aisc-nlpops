@@ -5,6 +5,13 @@ from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 from summa.summarizer import summarize
 
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lex_rank import LexRankSummarizer
+from sumy.summarizers.lsa import LsaSummarizer
+from sumy.summarizers.sum_basic import SumBasicSummarizer
+from sumy.summarizers.text_rank import TextRankSummarizer
+
 
 class TagRemover(HTMLParser):
   def __init__(self):
@@ -59,7 +66,12 @@ def textrank(text, **kwargs):
   summary = re.sub('\n','\n\n', summary)
   return summary
 
-
+def sumysum(text, SumySummarizer, sentences=5):
+  parser = PlaintextParser.from_string(text, Tokenizer("english"))
+  summarizer = SumySummarizer()
+  summary = summarizer(parser.document, sentences)
+  summary = ' '.join(map(str, summary))
+  return summary
 
 rss ={
   'cbc-tech': {
@@ -85,7 +97,8 @@ for k, v in rss.items():
     soup = get_soup(entry.link)
     text, story = process_soup(soup, v['tgts'])
 
-    summary = textrank(text, words=50)
+    # summary = textrank(text, words=50)
+    summary = sumysum(text, TextRankSummarizer, sentences=3)
 
     print('-'*lwid)
     print(truncate(entry.title, lwid-5))
