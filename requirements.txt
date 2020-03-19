@@ -11,6 +11,7 @@ mlflow
 nltk
 numpy
 pandas
+pyside2
 rouge
 scikit-learn
 spacy

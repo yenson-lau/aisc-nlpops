@@ -3,7 +3,7 @@ import re, textwrap
 from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
-from summa.summarizer import summarize
+import summa.summarizer as TextRank
 
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
@@ -62,7 +62,7 @@ def print_text(text, width):
     print(textwrap.fill(p, width))
 
 def textrank(text, **kwargs):
-  summary = summarize(text, **kwargs)
+  summary = TextRank.summarize(text, **kwargs)
   summary = re.sub('\n','\n\n', summary)
   return summary
 
@@ -72,6 +72,7 @@ def sumysum(text, SumySummarizer, sentences=5):
   summary = summarizer(parser.document, sentences)
   summary = ' '.join(map(str, summary))
   return summary
+
 
 rss ={
   'cbc-tech': {
@@ -83,6 +84,10 @@ rss ={
     'tgts': [ [('p', {'data-selectable-paragraph': ''})] ],
   }
 }
+
+# summary = textrank(text, words=50)
+# summary = sumysum(text, TextRankSummarizer, sentences=3)
+summarize = lambda text: textrank(text, words=50)
 
 lwid = 70
 truncate = lambda t, lim: t if len(t)<=lim else t[:lim-3]+'...'
@@ -96,9 +101,7 @@ for k, v in rss.items():
   for entry in feed.entries[:2]:
     soup = get_soup(entry.link)
     text, story = process_soup(soup, v['tgts'])
-
-    # summary = textrank(text, words=50)
-    summary = sumysum(text, TextRankSummarizer, sentences=3)
+    summary = summarize(text)
 
     print('-'*lwid)
     print(truncate(entry.title, lwid-5))
@@ -106,5 +109,5 @@ for k, v in rss.items():
     print('-'*lwid)
     print_text(summary, lwid)
     print('')
-
   print('')
+

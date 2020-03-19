@@ -16,27 +16,32 @@ load_meta_data = json.loads(f.read())
 # Meta data endpoint
 @app.route('/', methods=['GET'])
 def meta_data():
+  return jsonify(load_meta_data)
 
-	return jsonify(load_meta_data)
+@app.route('/rss/<rss>', methods=['GET'])
+def summarize_rss(rss):
+  out = [f'URL: {rss}']
+  out.append(f'Length: {len(rss)}')
+  return '<br/>'.join(out)
 
 # Prediction endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
-	req = request.get_json()
-	
-	# Log the request
-	print({'request': req})
+  req = request.get_json()
 
-	# Format the request data in a DataFrame
-	inf_df = pd.DataFrame(req['data'])
+  # Log the request
+  print({'request': req})
 
-	# Get model prediction - convert from np to list
-	pred = model.predict(inf_df).tolist()
+  # Format the request data in a DataFrame
+  inf_df = pd.DataFrame(req['data'])
 
-	# Log the prediction
-	print({'response': pred})
+  # Get model prediction - convert from np to list
+  pred = model.predict(inf_df).tolist()
 
-	# Return prediction as reponse
-	return jsonify(pred)
+  # Log the prediction
+  print({'response': pred})
+
+  # Return prediction as reponse
+  return jsonify(pred)
 
 app.run(host='0.0.0.0', port=5000, debug=True)
