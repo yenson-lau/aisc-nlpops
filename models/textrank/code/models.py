@@ -8,10 +8,11 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.text_rank import TextRankSummarizer
 
 
-conda_env = { 'name': 'mlflow-env',
+CONDA_ENV = { 'name': 'mlflow-env',
               'channels': ['defaults'],
               'dependencies': ['python=3.6.9', {
                 'pip':[ f'mlflow=={mlflow.__version__}',
+                        f'cloudpickle==1.3.0',
                         f'summa==1.2.0',
                         f'sumy=={sumy.__version__}' ]
               } ] }
@@ -21,7 +22,7 @@ def save_pyfunc(model_path, model, artifacts, code_path):
     shutil.rmtree(model_path)
 
   pyfunc.save_model(path=model_path, python_model=model,
-                    conda_env=conda_env, artifacts=artifacts,
+                    conda_env=CONDA_ENV, artifacts=artifacts,
                     code_path=code_path)
 
 
@@ -49,7 +50,7 @@ class TextRank:
     return method(text, length)
 
 
-  def package(self, model_path='models/texrank'):
+  def package(self, model_path='models/textrank'):
     class ModelWrapper(pyfunc.PythonModel):
       def load_context(self, context):
         from models import TextRank

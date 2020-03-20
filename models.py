@@ -12,6 +12,7 @@ CONDA_ENV = { 'name': 'mlflow-env',
               'channels': ['defaults'],
               'dependencies': ['python=3.6.9', {
                 'pip':[ f'mlflow=={mlflow.__version__}',
+                        f'cloudpickle==1.3.0',
                         f'summa==1.2.0',
                         f'sumy=={sumy.__version__}' ]
               } ] }
@@ -49,7 +50,7 @@ class TextRank:
     return method(text, length)
 
 
-  def package(self, model_path='models/texrank'):
+  def package(self, model_path='models/textrank'):
     class ModelWrapper(pyfunc.PythonModel):
       def load_context(self, context):
         from models import TextRank
