@@ -8,7 +8,7 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.text_rank import TextRankSummarizer
 
 
-CONDA_ENV = { 'name': 'mlflow-env',
+conda_env = { 'name': 'mlflow-env',
               'channels': ['defaults'],
               'dependencies': ['python=3.6.9', {
                 'pip':[ f'mlflow=={mlflow.__version__}',
@@ -21,7 +21,7 @@ def save_pyfunc(model_path, model, artifacts, code_path):
     shutil.rmtree(model_path)
 
   pyfunc.save_model(path=model_path, python_model=model,
-                    conda_env=CONDA_ENV, artifacts=artifacts,
+                    conda_env=conda_env, artifacts=artifacts,
                     code_path=code_path)
 
 

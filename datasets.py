@@ -46,6 +46,8 @@ def getlines(fpath, idx, flen=None):
 
   return out[0] if type(idx)==int else out
 
+def printif(text, verbose=True, end='\n'):
+  if verbose:  print(text, end=end)
 
 
 class GigaWord(Dataset):
@@ -71,12 +73,17 @@ class GigaWord(Dataset):
 
 
 class CNNDailyMail(Dataset):
-  def __init__(self, directory='data/cnndm', split='train', outFilt=None):
+  def __init__(self, directory='data/cnndm', split='train',
+               outFilt=None, verbose=True):
+
     super(CNNDailyMail, self).__init__()
+    assert (split in ['train','val','test']), \
+      "split must be from 'train', 'val', or 'test'."
 
     self.directory = directory
     self.split = split
     self.outFilt = outFilt
+    self.verbose = verbose
 
     self.fpaths = edict(src=None, tgt=None)
     self.len = None
@@ -91,21 +98,21 @@ class CNNDailyMail(Dataset):
       fname = 'cnndm.tar.gz'
 
       try:
-        print(f'Downloading {fname}.')
+        printif(f'Downloading {fname}.', self.verbose)
         request.urlretrieve(url, fname)
 
-        print('Extracting.')
+        printif('Extracting.')
         with tarfile.open(fname, 'r:gz') as tar:
           tar.extractall(path=self.directory)
 
-        print('Done.', end=' ')
+        printif('Done.', end=' ', verbose=self.verbose)
 
       finally:
         if os.path.isfile(fname):
-          print(f'Removing {fname}.')
+          printif(f'Removing {fname}.', self.verbose)
           os.remove(fname)
     else:
-      print('Using existing data.')
+      printif('Using existing data.', self.verbose)
 
     # Get the appropriate files
     self.fpaths = edict(
