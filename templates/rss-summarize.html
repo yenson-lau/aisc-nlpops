@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>RSS Summary</h1>
+    <h1>RSS Summarizer</h1>
+    <p>Default targets should work on <a href="https://www.cbc.ca/rss/">any CBC RSS feed</a>.</p>
+    <p><b>For Medium feeds,</b> such as <a href="https://medium.com/feed/towards-data-science">https://medium.com/feed/towards-data-science</a>, try: <br><tt>[ [('p', {'data-selectable-paragraph': ''})] ]</tt></p>
+
+    <br>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
