@@ -1,4 +1,4 @@
-import json, re
+import json, os, re
 import mlflow.pyfunc
 import pandas as pd
 from flask import Flask, request, jsonify, flash, render_template
@@ -7,6 +7,16 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 from rss_summarizer import rss_summarize, parse_soup_tgts
+
+
+
+# Name of the apps module package
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'any secret string'
+
+# Load in the model at app startup
+model = mlflow.pyfunc.load_model('models/textrank')
+
 
 
 class RequestForm(FlaskForm):
@@ -18,23 +28,9 @@ class RequestForm(FlaskForm):
                           default="[[('div', {'class': 'story'}), ('p',)]]")
   submit = SubmitField('Summarize')
 
-# Name of the apps module package
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'any secret string'
-
-# Load in the model at app startup
-model = mlflow.pyfunc.load_model('models/textrank')
 
 
-
-# Meta data endpoint
 @app.route('/', methods=['GET', 'POST'])
-def hello_world():
-  return "Hello World!"
-
-
-
-@app.route('/rss', methods=['GET', 'POST'])
 def req_rss_sum():
   form = RequestForm()
 
@@ -59,7 +55,10 @@ def req_rss_sum():
 
 
 # Prediction endpoint
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET', 'POST'])
+def placeholder():
+  return "This doesn't exist yet. Sorry!"
+
 def predict():
   req = request.get_json()
 
@@ -78,6 +77,11 @@ def predict():
   # Return prediction as reponse
   return jsonify(pred)
 
+
+
+
 # app.run(host='0.0.0.0', port=5000, debug=True)
 if __name__ == '__main__':
-  app.run(debug=True)
+  # Get port from Heroku to avoid error
+  port = int(os.environ.get("PORT", 33507))
+  app.run(host='0.0.0.0', debug=True, port=port)
